@@ -3,7 +3,19 @@
 # 既存ファイルは ~/.ai-settings-backup-<日時>/ に退避してから上書きする。
 set -euo pipefail
 
-ARCHIVE="${1:?使い方: $0 <ai-cli-settings-YYYYMMDD.tar.gz>}"
+# 引数がなければ iCloud Drive / デスクトップ / ダウンロードから最新のバックアップを探す
+ARCHIVE="${1:-}"
+if [[ -z "$ARCHIVE" ]]; then
+  ARCHIVE="$(ls -t \
+    "$HOME/Library/Mobile Documents/com~apple~CloudDocs/ai-cli-settings/"ai-cli-settings-*.tar.gz \
+    "$HOME/Desktop/"ai-cli-settings-*.tar.gz \
+    "$HOME/Downloads/"ai-cli-settings-*.tar.gz 2>/dev/null | head -1 || true)"
+fi
+if [[ -z "$ARCHIVE" || ! -f "$ARCHIVE" ]]; then
+  echo "旧PCのバックアップが見つかりませんでした（スキップ）。"
+  exit 0
+fi
+echo "バックアップを使用: $ARCHIVE"
 BACKUP="$HOME/.ai-settings-backup-$(date +%Y%m%d%H%M%S)"
 
 while IFS= read -r path; do

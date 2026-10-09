@@ -3,7 +3,15 @@
 # 認証情報（ログイントークン）は含めない。新PCでは再ログインしてください。
 set -euo pipefail
 
-OUT="${1:-$HOME/Desktop/ai-cli-settings-$(date +%Y%m%d).tar.gz}"
+# 保存先: iCloud Drive があればそこへ（同じ Apple ID の新PCに自動で同期される）
+ICLOUD="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
+if [[ -d "$ICLOUD" ]]; then
+  DEST_DIR="$ICLOUD/ai-cli-settings"
+else
+  DEST_DIR="$HOME/Desktop"
+fi
+mkdir -p "$DEST_DIR"
+OUT="${1:-$DEST_DIR/ai-cli-settings-$(date +%Y%m%d%H%M%S).tar.gz}"
 cd "$HOME"
 
 ITEMS=()
@@ -40,6 +48,6 @@ printf '  - %s\n' "${ITEMS[@]}"
 # MCP サーバー（user スコープ）は ~/.claude.json に認証情報と一緒に入っているため、
 # 一覧だけ控えておき、新PCで `claude mcp add` し直す。
 if command -v claude >/dev/null 2>&1; then
-  claude mcp list > "$HOME/Desktop/claude-mcp-list.txt" 2>&1 || true
-  echo "MCP サーバー一覧: $HOME/Desktop/claude-mcp-list.txt"
+  claude mcp list > "$DEST_DIR/claude-mcp-list.txt" 2>&1 || true
+  echo "MCP サーバー一覧: $DEST_DIR/claude-mcp-list.txt"
 fi

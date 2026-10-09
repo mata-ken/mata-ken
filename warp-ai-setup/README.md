@@ -4,6 +4,7 @@
 
 ```
 warp-ai-setup/
+├── bootstrap.sh             # ワンライナー入口（旧PC: export / 新PC: setup）
 ├── install.sh               # 新PC: Warp / Claude Code / Codex をインストール + 設定テンプレート配置
 ├── export-from-old-pc.sh    # 旧PC: 既存の設定を tar.gz に書き出す（認証情報は含めない）
 ├── import-to-new-pc.sh      # 新PC: 書き出した設定を展開する
@@ -19,27 +20,46 @@ warp-ai-setup/
 
 ---
 
-## A. 旧PCの設定を引き継ぐ場合（推奨）
+## 使い方（コピペ1行ずつ）
 
-**旧PC** で:
+### ① 旧PC：設定をバックアップ
+
+ターミナルで以下を実行。バックアップは **iCloud Drive の `ai-cli-settings/`** に保存され、同じ Apple ID の新PCに自動で同期されます（iCloud がなければデスクトップに保存）。
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/mata-ken/mata-ken/main/warp-ai-setup/bootstrap.sh | bash -s -- export
+```
+
+### ② 新PC：インストール + 設定の復元
+
+iCloud の同期が終わったら（Finder の iCloud Drive に `ai-cli-settings` が見えたら）実行:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/mata-ken/mata-ken/main/warp-ai-setup/bootstrap.sh | bash
+```
+
+これで以下がすべて自動で行われます:
+
+1. 旧PCのバックアップを探して展開（なければスキップ＝新規セットアップ）
+2. Homebrew / Warp / Claude Code / Codex CLI をインストール（入っていればスキップ）
+3. 足りない設定ファイルをテンプレートから作成（既存の設定は上書きしない）
+4. Warp を起動
+
+### ③ ログイン（ここだけ手動・各1回）
+
+Warp で `claude` と `codex` を実行し、ブラウザでログインするだけです（下の「インストール後の初回設定」参照）。
+
+<details>
+<summary>手動で実行する場合</summary>
 
 ```bash
 git clone https://github.com/mata-ken/mata-ken.git
 cd mata-ken/warp-ai-setup
-./export-from-old-pc.sh
-# → ~/Desktop/ai-cli-settings-YYYYMMDD.tar.gz と claude-mcp-list.txt ができる
+./export-from-old-pc.sh        # 旧PC
+./import-to-new-pc.sh          # 新PC（引数なしで iCloud/デスクトップ/ダウンロードから自動検索）
+./install.sh                   # 新PC
 ```
-
-この2ファイルを AirDrop などで **新PC** に送り、新PCで:
-
-```bash
-git clone https://github.com/mata-ken/mata-ken.git
-cd mata-ken/warp-ai-setup
-./import-to-new-pc.sh ~/Downloads/ai-cli-settings-YYYYMMDD.tar.gz   # 先に旧設定を展開
-./install.sh                                                         # 足りないものだけ入れる
-```
-
-`install.sh` は既存の設定ファイルを上書きしないので、旧PCの設定がそのまま優先されます。
+</details>
 
 ### 引き継がれるもの / 引き継がれないもの
 
@@ -50,14 +70,6 @@ cd mata-ken/warp-ai-setup
 | Warp | テーマ, ワークフロー, 起動構成, `keybindings.yaml` | 一般設定 → Warp に同じアカウントでログインすると **Settings Sync** で同期（Settings → Account で有効化） |
 
 プロジェクトごとの設定（各リポジトリ内の `CLAUDE.md`, `.claude/`, `AGENTS.md`）はリポジトリと一緒に移るので作業不要です。
-
-## B. まっさらに始める場合
-
-```bash
-git clone https://github.com/mata-ken/mata-ken.git
-cd mata-ken/warp-ai-setup
-./install.sh
-```
 
 ---
 
