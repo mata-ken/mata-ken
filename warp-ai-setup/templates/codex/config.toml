@@ -1,0 +1,7 @@
+# Codex CLI 設定  https://github.com/openai/codex/blob/main/docs/config.md
+# model を固定したい場合はここに `model = "..."` を追加
+
+# 必要なときだけ確認を求める
+approval_policy = "on-request"
+# 作業ディレクトリ内のみ書き込み可
+sandbox_mode = "workspace-write"

@@ -1,0 +1,17 @@
+# Warp Launch Configuration: 左に Claude Code、右に Codex を並べて起動
+# 配置先: ~/.warp/launch_configurations/ai-dev.yaml（__HOME__ は install.sh がホームディレクトリに置換）
+# 起動: コマンドパレット (⌘P) → "Launch Configuration" → "AI Dev"
+---
+name: AI Dev
+windows:
+  - tabs:
+      - title: Claude + Codex
+        layout:
+          split_direction: horizontal
+          panes:
+            - cwd: __HOME__
+              commands:
+                - exec: claude
+            - cwd: __HOME__
+              commands:
+                - exec: codex
